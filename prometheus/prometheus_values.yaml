@@ -1,0 +1,60 @@
+server:
+  statefulSet:
+    enabled: true
+  replicaCount: 3
+  global:
+    ## How frequently to scrape targets by default
+    scrape_interval: 10s
+    ## How long until a scrape request times out
+    scrape_timeout: 5s
+    ## How frequently to evaluate rules
+    evaluation_interval: 1m
+  resources:
+     limits:
+       cpu: 500m
+       memory: 512Mi
+     requests:
+       cpu: 500m
+       memory: 512Mi
+
+  persistentVolume:
+    ## If true, Prometheus server will create/use a Persistent Volume Claim
+    ## If false, use emptyDir
+    enabled: true
+
+    ## Ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+
+  ## Prometheus data retention period (default if not specified is 15 days)
+  retention: "10d"
+
+  service:
+    enabled: true
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-attributes: load_balancing.cross_zone.enabled=true
+      service.beta.kubernetes.io/aws-load-balancer-name: metric-prometheus
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+      service.beta.kubernetes.io/aws-load-balancer-subnets: "subnet-0777b68e7af4f9dae"
+      service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: stickiness.enabled=false
+      service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+      external-dns.alpha.kubernetes.io/hostname: "metric_prometheus.kuberix.co.kr"
+
+alertmanager:
+  enabled: false
+
+kube-state-metrics:
+  enabled: true
+
+prometheus-node-exporter:
+  enabled: true
+  prometheus:
+    monitor:
+      interval: 30s
+
+
+prometheus-pushgateway:
+  enabled: false

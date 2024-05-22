@@ -1,0 +1,14 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  labels:
+    ingress.k8s.aws/stack: megatree-cd-alb
+  name: grafana-tgb
+  namespace: monitoring
+spec:
+  ipAddressType: ipv4
+  serviceRef:
+    name: grafana
+    port: 80
+  targetGroupARN: arn:aws:elasticloadbalancing:ap-northeast-2:123456789:targetgroup/megatree-grafana-tg/e32ae6c9b7224f8d
+  targetType: instance
